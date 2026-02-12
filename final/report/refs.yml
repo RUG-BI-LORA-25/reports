@@ -1,0 +1,172 @@
+pcb:
+  type: Web
+  title: Printed Circuit Board of the STM32 hat
+  author:
+    - Karakostov, Boyan
+    - David, Mihai
+  date: 2025
+  url: https://github.com/RUG-BI-LORA-25/periphs
+  note: "Accessed: 2026-01-15"
+code:
+  type: Web
+  title: Codebase for the LoRaWAN gateway implementation
+  author:
+    - Karakostov, Boyan
+    - David, Mihai
+  date: 2025
+  url: https://github.com/RUG-BI-LORA-25/code
+  note: "Accessed: 2026-01-15"
+
+lwn-simulator:
+  type: Article
+  title: "LWN Simulator - A LoRaWAN Network Simulator"
+  author:
+    - Santoro, C.
+    - Santoro, F. F.
+  parent:
+    type: Conference
+    title: "2023 IEEE International Conference on Enabling Technologies: Infrastructure for Collaborative Enterprises (WETICE)"
+    location: Paris, France
+  date: 2023
+  page-range: 1-6
+  doi: 10.1109/WETICE57085.2023.10477816
+
+lwn-simulator-repo:
+  type: Web
+  title: LWN-Simulator
+  author:
+    - UniCT-ARSLab
+  url: https://github.com/UniCT-ARSLab/LWN-Simulator
+  note: "Accessed: 2026-01-15"
+
+1ch-gateway:
+  type: Web
+  title: 1ch-gateway
+  author:
+    - M. Westenberg
+  url: https://github.com/things4u/ESP-1ch-Gateway
+  note: "Accessed and edited: 2026-01-17"
+
+gr-lora-sdr:
+  type: Article
+  title: "An Open-Source LoRa Physical Layer Prototype on GNU Radio"
+  author:
+    - Tapparel, Joachim
+    - Afisiadis, Orion
+    - Mayoraz, Pierre
+    - Balatsoukas-Stimming, Alexios
+    - Burg, Andreas
+  parent:
+    type: Conference
+    title: "2020 IEEE 21st International Workshop on Signal Processing Advances in Wireless Communications (SPAWC)"
+    location: Atlanta, GA, USA
+  date: 2020
+  page-range: 1-5
+  doi: 10.1109/SPAWC48557.2020.9154273
+
+gr-lora-sdr-updated:
+  type: Article
+  title: "Design and Implementation of LoRa Physical Layer in GNU Radio"
+  author:
+    - Tapparel, Joachim
+    - Burg, Andreas
+  parent:
+    type: Conference
+    title: "Proceedings of the GNU Radio Conference"
+    location: Knoxville, TN, USA
+  date: 2024
+
+gr-lora-sdr-repo:
+  type: Web
+  title: "gr-lora_sdr GitHub Repository"
+  author:
+    - Tapparel, Joachim
+  url: https://github.com/tapparelj/gr-lora_sdr
+  note: "Accessed: 2026-01-20"
+
+hackrf:
+  type: Web
+  title: "HackRF One - Great Scott Gadgets"
+  author:
+    - Great Scott Gadgets
+  url: https://greatscottgadgets.com/hackrf/one/
+  note: "Accessed: 2026-01-20"
+  
+semtech-udp:
+  type: Web
+  title: "Semtech UDP Protocol Specification"
+  author: "Lora-net"
+  url: https://github.com/Lora-net/packet_forwarder/blob/master/PROTOCOL.TXT
+  note: "Accessed: 2026-02-05"
+
+kamarudin-review:
+  type: Article
+  title: "Review of LoRaWAN: Performance, Key Issues and Future Perspectives"
+  author:
+    - Kamarudin, M. N. B. C.
+    - Ayob, A. B.
+    - Hussain, A. B.
+    - Abdolrasol, M. G. M.
+  parent:
+    type: Periodical
+    title: "Jurnal Kejuruteraan"
+  date: 2024
+
+magrin-lorawan:
+  type: Article
+  title: "A Thorough Study of LoRaWAN Performance Under Different Parameter Settings"
+  author:
+    - Magrin, Davide
+    - Capuzzo, Martina
+    - Zanella, Andrea
+  parent:
+    type: Periodical
+    title: "IEEE Internet of Things Journal"
+  date: 2019
+  doi: 10.1109/JIOT.2019.2946487
+
+andrade-battery:
+  type: Article
+  title: "Battery Life Optimization in LoRa Networks Using Spreading Factor Reallocation"
+  author:
+    - de Andrade, Ian H.
+    - Costa, Luís Henrique M. K.
+    - Couto, Rodrigo S.
+  parent:
+    type: Periodical
+    title: "Ad Hoc Networks"
+  date: 2025
+  doi: 10.1016/j.adhoc.2025.103793
+
+alipio-testing:
+  type: Article
+  title: "Current Testing and Performance Evaluation Methodologies of LoRa and LoRaWAN in IoT Applications: Classification, Issues, and Future Directives"
+  author:
+    - Alipio, Melchizedek
+    - Bures, Miroslav
+  parent:
+    type: Periodical
+    title: "Internet of Things"
+  date: 2024
+  doi: 10.1016/j.iot.2023.101048
+
+lavric-scalability:
+  type: Article
+  title: "Performance Evaluation of LoRaWAN Communication Scalability in Large-Scale Wireless Sensor Networks"
+  author:
+    - Lavric, Alexandru
+    - Popa, Valentin
+  parent:
+    type: Periodical
+    title: "Wireless Communications and Mobile Computing"
+  date: 2018
+  doi: 10.1155/2018/6730719
+
+lorawan-spec:
+  type: Web
+  title: "LoraWan specification"
+  author:
+    - Lora Alliance
+  url: https://lora-alliance.org/wp-content/uploads/2021/11/LoRaWAN-Link-Layer-Specification-v1.0.4.pdf
+  note: "Accessed: 2026-01-20"
+  
