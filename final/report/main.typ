@@ -48,16 +48,16 @@
 = Introduction
 LoRaWAN (Long Range Wide Area Network) is a low-power wide-area network protocol designed for wireless battery-operated devices in regional, national, or global networks. Built on top of the LoRa (Long Range) physical layer modulation, LoRaWAN defines the communication protocol and system architecture, while LoRa itself handles the physical layer that enables long-range links.
 
-The technology operates in unlicensed ISM (Industrial, Scientific, and Medical) radio bands -- typically 868 MHz (EU868) and 433 MHz (EU433) in Europe, 915 MHz in North America, and 433 MHz in Asia. In this work we focus on the 433 MHz band.
+The technology operates in unlicensed ISM (Industrial, Scientific, and Medical) radio bands -- typically 868 MHz (EU868) and 433 MHz (EU433) in Europe, 915 MHz in North America, and 433 MHz in Asia. In this project we focus on the 433 MHz band.
 
 LoRaWAN@lorawan-spec is well suited for Internet of Things (IoT) applications because it provides:
 - Long-range communication, enabled by LoRa's chirp spread spectrum modulation;
 - Low power consumption, thanks to optimized sleep modes and minimal transmission overhead;
 - Secure communication via end-to-end AES-128 encryption as required by the specification.
 
-The architecture follows a star-of-stars topology: end devices (sensors/actuators) communicate directly with gateways, which relay messages to a central network server over standard IP. This avoids complex multi-hop routing and simplifies network management.
+The architecture follows a star-of-stars topology: end devices (sensors/actuators) communicate directly with gateways, which relay messages to a central network server over standard IP.
 
-An important feature of LoRaWAN is the use of multiple spreading factors (SF7-SF12), which trade off data rate for range and robustness. In a production deployment, multi-channel gateways based on the Semtech SX1301/SX1302 concentrator can receive on several SFs and channels simultaneously. However, many low-cost or experimental setups rely on single-channel gateways, which can only listen on one SF and one frequency at a time. This severely limits throughput and makes the choice of transmission parameters critical -- a problem this work directly addresses.
+An important feature of LoRaWAN is the use of multiple spreading factors (SF7-SF12), which trade off data rate for range and robustness. In a production deployment, multi-channel gateways based on the Semtech SX1301/SX1302 concentrator can receive on several SFs and channels simultaneously. However, many low-cost or experimental setups rely on single-channel gateways, which can only listen on one SF and one frequency at a time. A situation this project directly addresses.
 
 LoRaWAN defines three device classes with different capabilities and power profiles, summarized in Table 1.
 
@@ -79,7 +79,7 @@ LoRaWAN defines three device classes with different capabilities and power profi
 Class A devices offer the lowest power consumption and are most suitable for battery-operated sensors. Class B devices enable more predictable downlink latency through time-synchronized beacons. Class C devices provide minimal latency but require continuous power supply.
 ]
 
-The protocol uses several algorithms(notably Adaptive Data Rate -- ADR) to optimize transmission parameters including spreading factor, bandwidth, and transmission power based on conditions. Spreading factors range from SF7 (fastest data rate, shortest range) to SF12 (slowest data rate, longest range). Table 2 shows the characteristics of each.
+The protocol uses several algorithms (notably Adaptive Data Rate -- ADR) to optimize transmission parameters including spreading factor, bandwidth, and transmission power based on conditions. Spreading factors range from SF7 (fastest data rate, shortest range) to SF12 (slowest data rate, longest range). Table 2 shows the characteristics of each.
 #figure(
   table(
     columns: 5,
@@ -104,21 +104,23 @@ In a standard multi-channel deployment, gateways can receive on multiple SFs and
 This work focuses on that constrained scenario: a small multi-node LoRaWAN network operating over a single channel. The central question is: *how can we maximize data throughput while minimizing energy consumption when all nodes share a single receive channel and inter-node interference is unavoidable?*
 
 = Related Work
-Several studies have examined LoRaWAN performance and the impact of parameter selection. Magrin et al.@magrin-lorawan provide a thorough analysis of how different LoRaWAN parameter settings: spreading factor, bandwidth, coding rate, and transmission power, affect network performance metrics such as packet delivery ratio, energy consumption, and fairness. Their simulation-based study highlights the strong interdependence between these parameters and the difficulty of finding a single optimal configuration.
+Several studies have examined LoRaWAN performance and the impact of parameter selection. 
 
-Lavric and Popa@lavric-scalability evaluate LoRaWAN scalability in large-scale wireless sensor networks, showing that alongside node density increases, collision rates grow significantly, particularly when all nodes use the same spreading factor. These results underline the need for intelligent SF allocation strategies in dense deployments.
+Magrin et al.@magrin-lorawan provide an analysis of how different LoRaWAN parameter settings: spreading factor, bandwidth, coding rate, and transmission power, affect network performance metrics such as packet delivery ratio, energy consumption, and fairness. Their simulation-based study highlights the strong interdependence between these parameters and the difficulty of finding a single optimal configuration.
 
-On the energy side, de Andrade et al.@andrade-battery propose a dynamic SF reallocation strategy that accounts for the battery levels of individual nodes. By periodically redistributing SF assignments across the network, their approach reduces collisions between same-SF transmissions and extends overall network lifetime. This is directly relevant to our work, as we also aim to balance SF diversity against energy efficiency.
+Lavric and Popa@lavric-scalability evaluate LoRaWAN scalability in large-scale wireless sensor networks, showing that alongside node density increases, collision rates grow significantly, particularly when all nodes use the same spreading factor. 
 
-Kamarudin et al.@kamarudin-review present a broader review of LoRaWAN performance, covering indoor and outdoor scenarios, and identify key open issues including interference management, adaptive data rate behavior, and gateway capacity limitations. Their work provides context for understanding where single-channel setups fall short compared to multi-channel concentrators.
+On the energy side, de Andrade et al.@andrade-battery propose a dynamic SF reallocation strategy that accounts for the battery levels of individual nodes. 
+
+Kamarudin et al.@kamarudin-review present a broader review of LoRaWAN performance, covering indoor and outdoor scenarios, and identify open issues including interference management, adaptive data rate behavior, and gateway capacity limitations. Their work provides context for understanding where single-channel setups fall short compared to multi-channel concentrators.
 
 #gpt[
-Our work builds on these findings by focusing specifically on the single-channel case, where the trade-offs identified in the literature become even more pronounced. Rather than relying on simulation alone, we implement a real hardware testbed using an SDR-based gateway for full control over the physical layer.
+Our work builds on these findings by focusing specifically on the single-channel case. Rather than relying on simulation alone, we implement a real hardware testbed using an SDR-based gateway for full control over the physical layer.
 ]
 = Experimental Setup
 == Objectives
 #gpt[
-We investigate how a three-node LoRa network can optimize the trade-off between data rate and energy consumption by employing adaptive transmit power control combined with dynamic spreading factor (SF) allocation. Each node will adjust its transmit power based on gateway feedback of the received signal-to-noise ratio (SNR), using a PID-based control loop to maintain reliable communication while minimizing energy use. Simultaneously, the network will leverage SF diversity and coordinated timing to mitigate interference between nodes, allowing high-SF nodes to operate at lower power and low-SF nodes to maintain higher data rates. The study aims to develop and evaluate strategies that dynamically balance throughput, energy efficiency, and interference management in a small multi-node LoRa network, providing insights for scalable, energy-conscious IoT deployments.
+We investigate how a LoRa network can optimize the trade-off between data rate and energy consumption by employing our own spin on adaptive transmit power control combined with dynamic spreading factor (SF) allocation. Each node will adjust its transmit power based on gateway feedback of the received signal-to-noise ratio (SNR), using a PD-based control loop to maintain reliable communication while minimizing energy use. Simultaneously, the network will utilize SF adaptation and coordinated timing to mitigate interference between nodes.
 ]
 
 == Network Hierarchy
@@ -151,26 +153,26 @@ Our setup implements the standard LoRaWAN star-of-stars topology, illustrated in
 ) <fig:net_topology>
 == Hardware Configuration
 #gpt[
-Our experimental setup consists of multiple components forming a complete LoRaWAN network. The gateway uses a software-defined radio (SDR) approach, giving us low-level control over the LoRa physical layer.
+Our experimental setup consists of multiple components forming a complete LoRaWAN network. The gateway uses a software-defined radio (SDR) approach.
 ]
 
 === Nodes
 // #td[photo?]
-STM32F401RE microcontroller with a hat(as shown in the GitHub repository@pcb), consisting of:
+STM32F401RE microcontroller with a hat (as shown in the GitHub repository@pcb), consisting of:
 - SX1278 LoRa transceiver module operating at 433 MHz;
 - BME280 environmental sensor (temperature, humidity, pressure);
 - Standard photoresistor for light measurement;
 - An SSD1306 OLED screen for display.
 
 === Gateway
-Our gateway is built around a HackRF One@hackrf software-defined radio (SDR), controlled via GNU Radio and the `gr-lora_sdr`@gr-lora-sdr@gr-lora-sdr-updated@gr-lora-sdr-repo out-of-tree module. Unlike traditional single-channel gateways (e.g., ESP32-based), the HackRF approach gives us full control over the physical layer, letting us tune parameters like spreading factor, bandwidth, and sample rate at runtime.
+Our gateway is built around a HackRF One@hackrf software-defined radio (SDR), controlled via GNU Radio and the `gr-lora_sdr`@gr-lora-sdr@gr-lora-sdr-updated@gr-lora-sdr-repo out-of-tree module.
 
 The gateway software stack consists of:
 - _GNU Radio flowgraph (Python)_: handles LoRa modulation/demodulation via `gr-lora_sdr` blocks and interfaces with the HackRF through `gr-osmosdr`;
 - _Packet Forwarder_: implements the Semtech UDP packet forwarder protocol to relay received packets to ChirpStack;
 - _Transmitter_: handles downlink by encoding and modulating LoRaWAN frames for transmission via the HackRF.
 
-The whole system is containerized using Docker, with `gr-lora_sdr` built from source in a multi-stage build.
+The whole system is containerized using Docker, with `gr-lora_sdr` built from source.
 // #td[maybe mention the docker setup briefly? perhaps not]
 
 ==== Receiver chain
@@ -183,18 +185,13 @@ $ &"HackRF Source"\ &-> "Frame Sync" -> "FFT Demod" -> "Gray Demapping" \
 The `Frame Sync` block locks onto the LoRa preamble and synchronizes with the incoming chirps. After demodulation and decoding, packets are passed to a custom `LoRaPacketSink` block that forwards them to the packet forwarder via a callback. The oversampling factor is computed as $S_r / B_w$, and the minimum buffer size is set to $ceil(S_r / B_w dot 2^("SF") + 2)$, as each LoRa symbol spans $2^("SF")$ samples at a given bandwidth (and the +2 is a magic number).
 
 ===== SNR and RSSI Estimation
-The `frame_sync` block has an optional second output port (type `float32`) that, when connected, enables per-packet SNR estimation from the preamble. Internally, the block dechirps each preamble upchirp by multiplying with the ideal downchirp, takes the FFT, and computes:
+The `frame_sync` block has an optional second output port (type `float32`) that, when connected, enables per-packet SNR estimation from the preamble. Internally, the block decodes each preamble upchirp by multiplying with the ideal downchirp, takes the FFT, and computes:
 
 $ "SNR" = 10 log_10 (E_"peak" / (E_"total" - E_"peak")) $
 
-where $E_"peak"$ is the energy in the strongest FFT bin and $E_"total"$ is the total energy across all bins. The estimate is averaged over all usable preamble symbols. The block produces five floats per frame on port 1: SNR, CFO, STO, SFO, and an off-by-one indicator. A lightweight `SyncLogSink` block captures these values per SF chain.
+where $E_"peak"$ is the energy in the strongest FFT bin and $E_"total"$ is the total energy across all bins. The estimate is averaged over all usable preamble symbols. The block produces five floats per frame on port 1: SNR, CFO, STO, SFO, and an off-by-one indicator. A `SyncLogSink` block captures these values per SF chain.
 
-Since the HackRF One is not a calibrated receiver, absolute RSSI cannot be measured directly. Instead, we derive it from the SNR estimate and the receiver noise floor. The noise floor of any receiver is:
-
-$ N_"floor" = N_0 |_("dBm/Hz") + 10 log_10 (B_w) + "NF" $
-For our configuration ($B_w = 125 "kHz"$, $"NF" = 11 "dB"$), this gives $N_"floor" approx -112 "dBm"$. The noise figure is the only device-specific parameter and is configurable via an environment variable. RSSI is then:
-
-$ "RSSI" = N_"floor" + "SNR" $
+Since the HackRF One is not a calibrated receiver, absolute RSSI cannot be measured directly. Instead, we extract it the `gr-lora_sdr` `fft_demod` block's `rssi` output.
 
 #figure(
   image("assets/receiver.pdf", width: 100%),
@@ -227,10 +224,10 @@ We run multiple parallel receiver chains, each tuned to a different spreading fa
 
 
 ==== Half-Duplex Operation
-The HackRF One cannot receive and transmit at the same time (its half-duplex), so when ChirpStack wants to send a downlink the packet forwarder has to stop the receiver, spin up the transmitter, wait for the frame to go out, and restart the receiver. We compensate for the timing with a configurable timestamp offset (`TMST_OFFSET_US`, set to 2.5 s by default) that accounts for GNU Radio pipeline and HackRF USB buffering latency, so the downlink RF signal actually shows up when the node's RX window is open. On the node side, RX1 opens 5.5 s after TX and RX2 at 7.5 s, with a 250 ms scan guard.
+The HackRF One cannot receive and transmit at the same time (its half-duplex), so when ChirpStack wants to send a downlink the packet forwarder has to stop the receiver, spin up the transmitter, wait for the frame to go out, and restart the receiver. We compensate for the timing mismatch by informing Chirpstack that we have handled downlink before actually doing so. In reality, the transmission is delayed by a user-defined constant (as USB and transmit/receive chain overhead differs based on hardware) On the node side, RX1 opens 5.5 s after TX and RX2 at 7.5 s, with a 250 ms scan guard.
 
 ==== Network Server
-We run ChirpStack v4@code as the network server, deployed in Docker alongside PostgreSQL 14, Redis 7, Mosquitto 2 (MQTT broker), and the ChirpStack Gateway Bridge. The gateway bridge is set up for the EU433 band with MQTT topics prefixed by `eu433/`. ChirpStack does device management, packet deduplication, MAC commands, and data routing. The built-in ADR is disabled, as our PD controller sends data rate and power commands through the ChirpStack gRPC API instead.
+We run ChirpStack v4@code as the network server, deployed in Docker alongside PostgreSQL 14, Redis 7, Mosquitto 2 (MQTT broker), and the ChirpStack Gateway Bridge. The gateway bridge is set up for the EU433 band with MQTT topics prefixed by `eu433/`. ChirpStack does device management, packet deduplication, MAC commands, and data routing. The built-in ADR is not disabled and need not be, as the PD controller sends data rate and power commands through the ChirpStack gRPC API directly.
 
 ==== Simulation
 For testing at larger scale than our physical setup allows, we set up an ns-3 simulation environment with the LoRaWAN module from Magrin et al.@magrin-lorawan (`signetlabdei/lorawan`). The `setup.sh` script clones ns-3, grabs the LoRaWAN module and builds with examples and tests. This lets us compare our physical measurements with simulation results.
@@ -246,7 +243,7 @@ Right now $T_"interval" = 60$ s and $N_"slots" = 2$. The slot offset is computed
 
 $ "TDMA_SLOT_OFFSET_MS" = T_"interval" / N_"slots" times s $
 
-Each node is offset by 30 seconds from the other, which leaves enough time for the uplink, both RX windows, and processing. There is no hardware clock sync -- the nodes need to be started roughly at the same time, and the fixed-interval loop in the firmware keeps things lined up. We have not encountered any collisions with this setup.
+Each node is offset by 30 seconds from the other, which leaves enough time for the uplink, both RX windows, and processing. There is no hardware clock sync -- the nodes need to be started roughly at the same time, and the fixed-interval loop in the firmware handles the rest. We have not encountered any collisions with this setup.
 
 === PD-Based Transmit Power and Spreading Factor Control
 Instead of using ChirpStack's built-in ADR, we wrote our own PD (proportional-derivative) control loop that adjusts each node's TX power and spreading factor independently. The controller is a C shared library (`libalgo.so`) called from a Python wrapper (`wrapper.py`). The wrapper subscribes to uplink events over MQTT and pushes downlink commands through the ChirpStack gRPC API.
@@ -287,7 +284,7 @@ $ P_(k+1) = "clamp"(P_k + "round"(Delta P \/ 2) dot 2, thin P_"min", thin P_"max
 ==== SF Escalation and De-Escalation
 We provide a heuristic that manages SF changes:
 
-- _SF goes up (link stressed):_ If measured SNR is below target, or even at max power the SNR margin would still be less than a comfort threshold ($C = 10$ dB), we increase SF up by one, set TX power back to $P_"max"$, and reset the PD state (previous error and stability counter go to zero). This lets the controller start fresh at the more robust config.
+- _SF goes up (link stressed):_ If measured SNR is below target, or even at max power the SNR margin would still be less than a comfort threshold ($C = 10$ dB), we increase SF up by one, set TX power back to $P_"max"$, and reset the PD state (previous error and stability counter go to zero). This lets the controller start fresh at the better-fitting config.
 
 - _SF goes down (too much margin):_ If the error exceeds a margin threshold ($M = 5$ dB) and TX power has already been at $P_"min"$ for at least $W = 3$ frames in a row, we drop SF by one. Power gets reset to $P_"max"$ again and PD state is cleared, so the controller can re-converge at the faster data rate.
 
@@ -303,7 +300,7 @@ The full loop can be summarized as follows (see @fig:control_loop):
 + Node receives the downlink, unpacks the `State` struct, and calls `lora.reBegin(params)` which updates the target DR. Takes effect on the next uplink.
 
 #figure(
-  canvas(length: 0.55cm, {
+  canvas(length: 0.45cm, {
     import draw: *
     
     rect((0, -0.4), (2.5, 0.4), name: "node")
@@ -340,10 +337,30 @@ The full loop can be summarized as follows (see @fig:control_loop):
 ) <fig:control_loop>
 
 = Results
-// Results pending -- data collection from PD controller evaluation and ns-3 simulations in progress.
+
+== Field Test
+To validate the gateway hardware and SNR/RSSI estimation pipeline, we carried out a walk test through the city centre. A single node transmitted at fixed TX power (2 dBm, SF7) while being carried to several locations at different distances from two gateway positions. @fig:field-time through @fig:field-params summarise the results.
+
+#include "field-plots.typ"
+== Simulation
+To evaluate the performance of our PD-based control strategy at larger scale, we set up an ns-3 simulation. The results shown here focus on a single node to clearly demonstrate the control behavior. Since our TDMA scheme (see Methodology) prevents collisions by assigning each node a dedicated time slot, the per-node dynamics are largely independent -- additional nodes will exhibit similar adaptation patterns within their respective slots. Therefore, observing one node provides shows how the PD controller manages spreading factor and transmit power under varying link conditions.
+
+#include "sim-plots.typ"
 
 = Discussion
-// Discussion pending results.
+== Field Test Analysis
+As shown in @fig:field-params, the node transmitted at a fixed SF7 and 2~dBm throughout the entire test, which is clearly sub-optimal for the range of distances covered. Upon investigation, we traced this behaviour to the received-power calculation used by the ADR algorithm in the firmware. The SNR targets configured in the ADR implementation are conservative values on the order of $-7$~dB (one target per spreading factor), designed so that the algorithm increases SF or TX power when the measured SNR falls below the target. However, during our field test the observed SNR consistently remained around $+10$~dB -- well above these thresholds -- causing the algorithm to conclude that the link budget had ample margin. Hence, ADR never triggered an increase in spreading factor or transmit power, and the PID controller driving the adaptation continually drove both parameters toward their lowest (most energy-efficient) settings: SF7 and the minimum TX power of 2~dBm.
+
+This indicates that the RSSI values reported by the gateway are higher than the true received signal level, likely due to an offset in the Rx power calculation. This is clearly a limitation of the HackRF One, which lacks accurate absolute power calibration and tends to report inflated RSSI values.
+
+== Simulation Analysis
+The simulation shows the PD controller working as intended. @fig:sim-snr-tracking demonstrates that measured SNR tracks the target well, with fast response to changes and only small steady-state error (expected without an integral term).
+
+@fig:sim-params shows the two-stage adaptation strategy. When the link is strong, the controller minimizes both SF and TX power (SF7, low power) for maximum throughput and efficiency. As conditions degrade, it first increases TX power. When power hits its limit, it raises the spreading factor to maintain reliability.
+
+Each SF change produces a step in the target SNR (dashed line in @fig:sim-snr-tracking), and the controller tracks these new targets appropriately.
+
+The simulation validates that PD control can balance throughput and reliability when RSSI measurements are accurate -- unlike the field test where HackRF calibration issues prevented proper operation.
 
 = Limitations & Future Work
 There are a few limitations with what we have so far.
@@ -358,5 +375,5 @@ We tested with two physical nodes even though the original plan was three. A thi
 
 = LLM Transparency
 Parts of this project involved large language model assistance:
-- This report was produced (structured and checked) with the help of Claude Opus 4.6 (Anthropic).
+- This report was produced with the help (structuring and wording) of Claude Opus 4.6 (Anthropic).
 - The TDMA logic and transmission chain implementation were heavily assisted by Claude Opus 4.6.
