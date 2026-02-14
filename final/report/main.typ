@@ -339,7 +339,7 @@ The full loop can be summarized as follows (see @fig:control_loop):
 = Results
 
 == Field Test
-To validate the gateway hardware and SNR/RSSI estimation pipeline, we carried out a walk test through the city centre. A single node transmitted at fixed TX power (2 dBm, SF7) while being carried to several locations at different distances from two gateway positions. @fig:field-time through @fig:field-params summarise the results.
+To validate the full closed-loop system, we carried out a walk test with the PD controller active. A single node with TDMA timing of 50~s was carried to distances of approximately 100~m, 250~m, and 400~m from a stationary gateway placed at $approx$10~m elevation. The controller adapted both spreading factor and TX power in real time based on downlink commands. @fig:field-time through @fig:field-distance summarise the results.
 
 #include "field-plots.typ"
 == Simulation
@@ -349,9 +349,10 @@ To evaluate the performance of our PD-based control strategy at larger scale, we
 
 = Discussion
 == Field Test Analysis
-As shown in @fig:field-params, the node transmitted at a fixed SF7 and 2~dBm throughout the entire test, which is clearly sub-optimal for the range of distances covered. Upon investigation, we traced this behaviour to the received-power calculation used by the ADR algorithm in the firmware. The SNR targets configured in the ADR implementation are conservative values on the order of $-7$~dB (one target per spreading factor), designed so that the algorithm increases SF or TX power when the measured SNR falls below the target. However, during our field test the observed SNR consistently remained around $+10$~dB -- well above these thresholds -- causing the algorithm to conclude that the link budget had ample margin. Hence, ADR never triggered an increase in spreading factor or transmit power, and the PID controller driving the adaptation continually drove both parameters toward their lowest (most energy-efficient) settings: SF7 and the minimum TX power of 2~dBm.
+The field test confirms that the PD controller successfully adapts SF and TX power in real time. As shown in @fig:field-params, the controller raises TX power first as the node moves further from the gateway, and then increases the spreading factor once TX power nears its limit. @fig:field-time shows measured SNR tracking the target reasonably well, with the target stepping as the controller changes SF.
 
-This indicates that the RSSI values reported by the gateway are higher than the true received signal level, likely due to an offset in the Rx power calculation. This is clearly a limitation of the HackRF One, which lacks accurate absolute power calibration and tends to report inflated RSSI values.
+
+@fig:field-distance shows both SNR and RSSI degrading with distance, consistent with free-space path loss expectations. The controller compensates for this degradation by adjusting transmission parameters.
 
 == Simulation Analysis
 The simulation shows the PD controller working as intended. @fig:sim-snr-tracking demonstrates that measured SNR tracks the target well, with fast response to changes and only small steady-state error (expected without an integral term).
@@ -360,7 +361,7 @@ The simulation shows the PD controller working as intended. @fig:sim-snr-trackin
 
 Each SF change produces a step in the target SNR (dashed line in @fig:sim-snr-tracking), and the controller tracks these new targets appropriately.
 
-The simulation validates that PD control can balance throughput and reliability when RSSI measurements are accurate -- unlike the field test where HackRF calibration issues prevented proper operation.
+The simulation validates that PD control can balance throughput and reliability when RSSI measurements are accurate -- consistent with what we observed in the field test after fixing the stale-SF bug.
 
 = Limitations & Future Work
 There are a few limitations with what we have so far.
@@ -372,6 +373,8 @@ Our TDMA scheme uses fixed slot assignments set at compile time with no clock sy
 The controller is PD, not PID -- there's no integral component, which means it cannot fully eliminate steady-state error. 
 
 We tested with two physical nodes even though the original plan was three. A third node would stress-test the TDMA scheme more and give us better data on interference.
+
+During testing we found that the node can get stuck at suboptimal parameters if it stops receiving downlinks (e.g.\ due to range or interference). It would be a good idea to have the node reset to default settings (DR0, maximum TX power) when no downlinks are received for a configurable period, so it can re-establish the link without manual intervention.
 
 = LLM Transparency
 Parts of this project involved large language model assistance:
